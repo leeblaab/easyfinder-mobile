@@ -42,7 +42,8 @@
         {
           "photosPermission": "Allow EasyFinder to access your photos for uploading vendor logos."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "scheme": "easyfinder"
   }

@@ -9,31 +9,8 @@ import { useCategories } from '../../src/hooks/useCategories';
 import { useFeaturedVendors } from '../../src/hooks/useFeaturedVendors';
 import { usePullToRefresh } from '../../src/hooks/usePullToRefresh';
 import { VendorCard } from '../../src/components/VendorCard';
-
-const mapDirectusIconToMCI = (icon: string | undefined): any => {
-  if (!icon) return 'help-circle';
-  const iconLower = icon.toLowerCase().replace(/_/g, '-');
-  const mapping: { [key: string]: string } = {
-    'plumbing': 'wrench',
-    'electrician': 'flash',
-    'ac_repair': 'air-conditioner',
-    'ac-repair': 'air-conditioner',
-    'cleaning': 'broom',
-    'movers': 'truck-delivery',
-    'painting': 'format-paint',
-    'painters': 'format-paint',
-    'pest_control': 'bug',
-    'pest-control': 'bug',
-    'photography': 'camera',
-    'repair': 'tools',
-    'plumber': 'wrench',
-    'electric': 'flash',
-    'clean': 'broom',
-    'move': 'truck',
-    'paint': 'palette',
-  };
-  return mapping[iconLower] || iconLower || 'help-circle';
-};
+import { Vendor } from '../../src/types';
+import { resolveCategoryIconName } from '../../src/utils/categoryIcon';
 
 const VendorCardSkeleton = () => (
   <View className="flex-row bg-white p-4 rounded-xl border border-gray-100 mb-3 items-center">
@@ -88,7 +65,7 @@ const CategoryItem = ({ category, router }: { category: any; router: any }) => {
         className="w-14 h-14 bg-[#EEF5FF] rounded-full items-center justify-center border border-[#176B87]/10 active:opacity-90"
       >
         <MaterialCommunityIcons
-          name={mapDirectusIconToMCI(category.icon)}
+          name={resolveCategoryIconName(category.icon)}
           size={24}
           color="#176B87"
         />
@@ -114,8 +91,8 @@ export default function HomeScreen() {
       
       <FlatList
         data={featuredVendors}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <VendorCard vendor={item} />}
+        keyExtractor={(item: Vendor) => item.id.toString()}
+        renderItem={({ item }: { item: Vendor }) => <VendorCard vendor={item} />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

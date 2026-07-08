@@ -8,31 +8,7 @@ import * as Haptics from 'expo-haptics';
 import { useCategories } from '../../src/hooks/useCategories';
 import { usePullToRefresh } from '../../src/hooks/usePullToRefresh';
 import { Category } from '../../src/types';
-
-const mapDirectusIconToMCI = (icon: string | undefined): any => {
-  if (!icon) return 'help-circle';
-  const iconLower = icon.toLowerCase().replace(/_/g, '-');
-  const mapping: { [key: string]: string } = {
-    'plumbing': 'wrench',
-    'electrician': 'flash',
-    'ac_repair': 'air-conditioner',
-    'ac-repair': 'air-conditioner',
-    'cleaning': 'broom',
-    'movers': 'truck-delivery',
-    'painting': 'format-paint',
-    'painters': 'format-paint',
-    'pest_control': 'bug',
-    'pest-control': 'bug',
-    'photography': 'camera',
-    'repair': 'tools',
-    'plumber': 'wrench',
-    'electric': 'flash',
-    'clean': 'broom',
-    'move': 'truck',
-    'paint': 'palette',
-  };
-  return mapping[iconLower] || iconLower || 'help-circle';
-};
+import { resolveCategoryIconName } from '../../src/utils/categoryIcon';
 
 const CategoryGridItem = ({ item, onPress }: { item: Category; onPress: () => void }) => {
   const scaleAnim = React.useRef(new Animated.Value(1)).current;
@@ -65,7 +41,7 @@ const CategoryGridItem = ({ item, onPress }: { item: Category; onPress: () => vo
       >
         <View className="w-14 h-14 bg-[#EEF5FF] rounded-full items-center justify-center mb-3 border border-[#176B87]/10">
           <MaterialCommunityIcons
-            name={mapDirectusIconToMCI(item.icon)}
+            name={resolveCategoryIconName(item.icon)}
             size={28}
             color="#176B87"
           />
@@ -136,8 +112,8 @@ export default function CategoriesScreen() {
       ) : (
         <FlatList
           data={categories}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
+          keyExtractor={(item: Category) => item.id.toString()}
+          renderItem={({ item }: { item: Category }) => (
             <CategoryGridItem
               item={item}
               onPress={() => handleCategoryPress(item)}

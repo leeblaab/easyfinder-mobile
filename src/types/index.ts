@@ -20,6 +20,7 @@ export interface Vendor {
   whatsapp_link?: string | null;
   website?: string | null;
   description?: string | null;
+  status?: 'pending' | 'published' | 'rejected';
 }
 
 export interface UserProfile {

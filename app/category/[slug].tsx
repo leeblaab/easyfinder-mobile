@@ -17,31 +17,8 @@ import { useVendorsByCategory } from '../../src/hooks/useVendorsByCategory';
 import { useCategories } from '../../src/hooks/useCategories';
 import { usePullToRefresh } from '../../src/hooks/usePullToRefresh';
 import { VendorCard } from '../../src/components/VendorCard';
-
-const mapDirectusIconToMCI = (icon: string | undefined): any => {
-  if (!icon) return 'help-circle';
-  const iconLower = icon.toLowerCase().replace(/_/g, '-');
-  const mapping: { [key: string]: string } = {
-    'plumbing': 'wrench',
-    'electrician': 'flash',
-    'ac_repair': 'air-conditioner',
-    'ac-repair': 'air-conditioner',
-    'cleaning': 'broom',
-    'movers': 'truck-delivery',
-    'painting': 'format-paint',
-    'painters': 'format-paint',
-    'pest_control': 'bug',
-    'pest-control': 'bug',
-    'photography': 'camera',
-    'repair': 'tools',
-    'plumber': 'wrench',
-    'electric': 'flash',
-    'clean': 'broom',
-    'move': 'truck',
-    'paint': 'palette',
-  };
-  return mapping[iconLower] || iconLower || 'help-circle';
-};
+import { Vendor } from '../../src/types';
+import { resolveCategoryIconName } from '../../src/utils/categoryIcon';
 
 export default function CategoryDetailScreen() {
   const { slug } = useLocalSearchParams();
@@ -89,7 +66,7 @@ export default function CategoryDetailScreen() {
       <View className="bg-white px-5 py-6 border-b border-gray-100 flex-row items-center shadow-sm">
         <View className="w-14 h-14 bg-[#EEF5FF] rounded-2xl items-center justify-center border border-[#176B87]/10 mr-4">
           <MaterialCommunityIcons
-            name={mapDirectusIconToMCI(category?.icon)}
+            name={resolveCategoryIconName(category?.icon)}
             size={28}
             color="#176B87"
           />
@@ -129,8 +106,8 @@ export default function CategoryDetailScreen() {
       ) : (
         <FlatList
           data={vendors}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <VendorCard vendor={item} />}
+          keyExtractor={(item: Vendor) => item.id.toString()}
+          renderItem={({ item }: { item: Vendor }) => <VendorCard vendor={item} />}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

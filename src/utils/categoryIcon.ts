@@ -1,0 +1,60 @@
+const FALLBACK_ICON = 'help-circle';
+
+const directusIconMap: Record<string, string> = {
+  'ac-repair': 'air-conditioner',
+  'ac-repair-service': 'air-conditioner',
+  'ac-unit': 'air-conditioner',
+  'ac_repair': 'air-conditioner',
+  'bakery-dining': 'cake',
+  'bug-report': 'bug',
+  'car-rental': 'car',
+  'car-crash': 'car',
+  'carpenter': 'tools',
+  'celebration': 'gift',
+  'chair': 'chair-rolling',
+  'clean': 'broom',
+  'cleaning': 'broom',
+  'code': 'code-tags',
+  'construction': 'tools',
+  'delivery-truck-speed': 'truck-delivery',
+  'description': 'text-box-outline',
+  'desktop-windows': 'monitor',
+  'directions-car': 'car',
+  'electric': 'flash',
+  'electric-bolt': 'flash',
+  'electric-car': 'car',
+  'electrician': 'flash',
+  'face': 'account',
+  'featured-seasonal-and-gifts': 'gift',
+  'fitness-center': 'dumbbell',
+  'grid-on': 'grid',
+  'home-repair-service': 'tools',
+  'instant-mix': 'blender',
+  'inventory-2': 'package-variant',
+  'move': 'truck',
+  'movers': 'truck-delivery',
+  'paint': 'palette',
+  'painting': 'format-paint',
+  'painters': 'format-paint',
+  'pest-control': 'bug',
+  'pest_control': 'bug',
+  'photography': 'camera',
+  'plumber': 'wrench',
+  'plumbing': 'wrench',
+  'repair': 'tools',
+  'restaurant': 'silverware-fork-knife',
+  'shopping-bag-speed': 'cart',
+  'sign-language': 'account',
+  'tire-repair': 'car',
+  'tv': 'television',
+  'videocam': 'video',
+  'water-drop': 'water',
+  'yard': 'tree',
+};
+
+export const resolveCategoryIconName = (icon?: string): string => {
+  if (!icon) return FALLBACK_ICON;
+
+  const normalized = icon.toLowerCase().trim().replace(/[_\s]+/g, '-');
+  return directusIconMap[normalized] || FALLBACK_ICON;
+};

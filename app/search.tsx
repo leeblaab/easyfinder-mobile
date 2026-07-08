@@ -18,6 +18,7 @@ import { useSearchVendors } from '../src/hooks/useSearchVendors';
 import { usePullToRefresh } from '../src/hooks/usePullToRefresh';
 import { VendorCard } from '../src/components/VendorCard';
 import { sanitizeSearchQuery } from '../src/utils/inputSanitizer';
+import { Vendor } from '../src/types';
 
 export default function SearchScreen() {
   const router = useRouter();
@@ -90,8 +91,8 @@ export default function SearchScreen() {
     return (
       <FlatList
         data={vendors}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <VendorCard vendor={item} />}
+        keyExtractor={(item: Vendor) => item.id.toString()}
+        renderItem={({ item }: { item: Vendor }) => <VendorCard vendor={item} />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

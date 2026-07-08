@@ -94,12 +94,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const token = await SecureStore.getItemAsync(TOKEN_KEY);
       if (token) {
-        apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const user = await authService.fetchMe(token);
-        set({
-          user,
-          isAuthenticated: true,
-        });
+        try {
+          apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          const user = await authService.fetchMe(token);
+          set({
+            user,
+            isAuthenticated: true,
+          });
+        } catch (fetchError) {
+          console.warn('Failed to fetch user profile:', fetchError);
+          // Token exists but user fetch failed - clear invalid token
+          try {
+            await SecureStore.deleteItemAsync(TOKEN_KEY);
+            delete apiClient.defaults.headers.common['Authorization'];
+          } catch (_) {}
+          set({
+            user: null,
+            isAuthenticated: false,
+          });
+        }
       } else {
         set({
           user: null,

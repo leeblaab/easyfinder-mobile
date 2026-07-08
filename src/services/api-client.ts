@@ -8,6 +8,7 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout to prevent hanging
 });
 
 // Response interceptor to handle global network and security errors

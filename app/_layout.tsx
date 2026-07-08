@@ -1,21 +1,13 @@
-import * as Sentry from '@sentry/react-native';
+import '../global.css';
 import React, { useEffect } from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAuthStore } from '../src/stores/useAuthStore';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Linking from 'expo-linking';
 import ErrorScreen from '../src/components/ErrorScreen';
 import { handleDeepLink } from '../src/utils/deepLinking';
-
-// Initialize Sentry for Error Tracking and Crash Reporting
-Sentry.init({
-  dsn: 'YOUR_SENTRY_DSN_HERE', // User will replace this with their actual Sentry DSN key later
-  enableInExpoDevelopment: true,
-  debug: __DEV__, // Enabled debugging only in development mode
-});
 
 // Initialize the TanStack Query Client
 const queryClient = new QueryClient({
@@ -27,12 +19,50 @@ const queryClient = new QueryClient({
   },
 });
 
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#111827',
+    marginBottom: 16,
+    letterSpacing: 0.5,
+  },
+  loadingSubtitle: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginBottom: 24,
+    fontWeight: '500',
+  },
+});
+
 function AppContent() {
   const { isLoading, hydrate } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    hydrate();
+    // Call hydrate but with a safety timeout to prevent hanging
+    const hydrateWithTimeout = async () => {
+      try {
+        await Promise.race([
+          hydrate(),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Hydration timeout')), 5000)
+          ),
+        ]);
+      } catch (error) {
+        console.warn('Hydration error or timeout:', error);
+        // Force loading to end even if hydration fails
+        useAuthStore.setState({ isLoading: false });
+      }
+    };
+
+    hydrateWithTimeout();
 
     // Listen to deep linking events
     const handleDeepLinkEvent = (event: { url: string }) => {
@@ -55,17 +85,10 @@ function AppContent() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white items-center justify-center">
-        <View className="w-20 h-20 bg-[#EEF5FF] rounded-3xl items-center justify-center border border-[#176B87]/10 mb-4">
-          <MaterialCommunityIcons name="magnify-expand" size={40} color="#176B87" />
-        </View>
-        <Text className="text-gray-900 font-extrabold text-xl tracking-wide">
-          EasyFinder UAE
-        </Text>
-        <Text className="text-gray-400 text-xs mt-1 font-medium">
-          Loading trusted UAE services...
-        </Text>
-        <ActivityIndicator size="small" color="#176B87" className="mt-6" />
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingTitle}>EasyFinder UAE</Text>
+        <Text style={styles.loadingSubtitle}>Loading trusted UAE services...</Text>
+        <ActivityIndicator size="large" color="#176B87" />
       </View>
     );
   }
@@ -87,15 +110,12 @@ function AppContent() {
 
 function RootLayout() {
   return (
-    <Sentry.ErrorBoundary fallback={<ErrorScreen />}>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaProvider>
-          <AppContent />
-        </SafeAreaProvider>
-      </QueryClientProvider>
-    </Sentry.ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <AppContent />
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }
 
-// Wrap the root layout in Sentry.wrap() to capture performance traces and autolink errors
-export default Sentry.wrap(RootLayout);
+export default RootLayout;
