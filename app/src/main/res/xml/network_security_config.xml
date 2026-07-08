@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">api.easyfinder.ae</domain>
+        <pin-set expiration="2027-01-01">
+            <!-- SHA-256 of the production server certificate Public Key -->
+            <!-- Backup pins are provided to ensure the app continues to function if certs are rotated -->
+            <pin digest="SHA-256">klO23nT2ehFD65S0Z6L38caEru6+/R9+63s6FTo6G74=</pin>
+            <pin digest="SHA-256">k2v657W2GC37g1SlOefD65S0Z6L38caEru6+/R9+63s=</pin>
+        </pin-set>
+    </domain-config>
+</network-security-config>

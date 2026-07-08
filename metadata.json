@@ -1,0 +1,8 @@
+{
+  "name": "EasyFinder UAE",
+  "description": "A native Android vendor directory to find trusted local service providers like plumbers, electricians, AC technicians, cleaners, movers, and more across Dubai, Abu Dhabi, and UAE.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
