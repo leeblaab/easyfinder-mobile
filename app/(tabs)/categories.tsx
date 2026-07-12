@@ -12,7 +12,6 @@ import { resolveCategoryIconName } from '../../src/utils/categoryIcon';
 
 const CategoryGridItem = ({ item, onPress }: { item: Category; onPress: () => void }) => {
   const scaleAnim = React.useRef(new Animated.Value(1)).current;
-
   const onPressIn = () => {
     Animated.spring(scaleAnim, {
       toValue: 0.96,
@@ -32,16 +31,16 @@ const CategoryGridItem = ({ item, onPress }: { item: Category; onPress: () => vo
   };
 
   return (
-    <Animated.View style={{ transform: [{ scale: scaleAnim }] }} className="flex-1 m-2">
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }} className="w-[48%] mb-4">
       <Pressable
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={onPress}
-        className="flex-1 bg-white p-5 rounded-2xl items-center justify-center border border-gray-100 shadow-sm active:opacity-90"
+        className="w-full bg-white p-5 rounded-2xl items-center justify-center border border-gray-100 shadow-sm active:opacity-90"
       >
         <View className="w-14 h-14 bg-[#EEF5FF] rounded-full items-center justify-center mb-3 border border-[#176B87]/10">
           <MaterialCommunityIcons
-            name={resolveCategoryIconName(item.icon)}
+            name={resolveCategoryIconName(item.icon) as any}
             size={28}
             color="#176B87"
           />
@@ -120,6 +119,11 @@ export default function CategoriesScreen() {
             />
           )}
           numColumns={2}
+          columnWrapperStyle={{ 
+            justifyContent: 'space-between',
+            paddingHorizontal: 12,  // Add this
+            marginBottom: 4         // Add this for row spacing
+          }}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -128,9 +132,12 @@ export default function CategoriesScreen() {
               tintColor="#176B87"
             />
           }
-          contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 16, paddingBottom: insets.bottom + 20 }}
+          contentContainerStyle={{ 
+            paddingVertical: 16, 
+            paddingBottom: insets.bottom + 20 
+          }}
           className="bg-gray-50"
-        />
+/>
       )}
     </View>
   );
