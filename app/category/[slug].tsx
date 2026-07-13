@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -17,22 +17,70 @@ import { useVendorsByCategory } from '../../src/hooks/useVendorsByCategory';
 import { useCategories } from '../../src/hooks/useCategories';
 import { usePullToRefresh } from '../../src/hooks/usePullToRefresh';
 import { VendorCard } from '../../src/components/VendorCard';
+import { CategoryFilters } from '../../src/components/CategoryFilters';
 import { Vendor } from '../../src/types';
 import { resolveCategoryIconName } from '../../src/utils/categoryIcon';
+
+interface Filters {
+  city?: string;
+  verifiedOnly?: boolean;
+}
 
 export default function CategoryDetailScreen() {
   const { slug } = useLocalSearchParams();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const [filters, setFilters] = useState<Filters>({});
 
-  const { data: vendors, isLoading: isVendorsLoading, isError: isVendorsError, refetch } = useVendorsByCategory(slug as string);
+  const {
+    vendors,
+    isLoading: isVendorsLoading,
+    isError: isVendorsError,
+    hasMore,
+    loadMore,
+    isLoadingMore,
+    refetch,
+  } = useVendorsByCategory(slug as string, filters);
+
   const { data: categories } = useCategories();
-
   const { refreshing, onRefresh } = usePullToRefresh(refetch);
 
   // Find category detail for the header
   const category = categories?.find((c) => c.slug === slug);
-  const categoryName = category?.name || (slug ? (slug as string).split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Category');
+  const categoryName =
+    category?.name ||
+    (slug ? (slug as string).split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Category');
+
+  const handleLoadMore = () => {
+    if (hasMore && !isLoadingMore) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      loadMore();
+    }
+  };
+
+  const renderFooter = () => {
+    if (!isLoadingMore) return null;
+    return (
+      <View className="py-6 items-center">
+        <ActivityIndicator size="small" color="#176B87" />
+        <Text className="text-gray-500 text-xs mt-2">Loading more providers...</Text>
+      </View>
+    );
+  };
+
+  const renderLoadMoreButton = () => {
+    if (!hasMore || isLoadingMore || vendors.length === 0) return null;
+    return (
+      <View className="px-4 py-6">
+        <Pressable
+          onPress={handleLoadMore}
+          className="bg-[#176B87] py-3 rounded-xl items-center active:opacity-90"
+        >
+          <Text className="text-white font-bold text-sm">Load More Providers</Text>
+        </Pressable>
+      </View>
+    );
+  };
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -66,20 +114,21 @@ export default function CategoryDetailScreen() {
       <View className="bg-white px-5 py-6 border-b border-gray-100 flex-row items-center shadow-sm">
         <View className="w-14 h-14 bg-[#EEF5FF] rounded-2xl items-center justify-center border border-[#176B87]/10 mr-4">
           <MaterialCommunityIcons
-            name={resolveCategoryIconName(category?.icon)}
+            name={resolveCategoryIconName(category?.icon) as any}
             size={28}
             color="#176B87"
           />
         </View>
         <View className="flex-1">
-          <Text className="text-gray-900 font-extrabold text-lg leading-tight">
-            {categoryName}
-          </Text>
+          <Text className="text-gray-900 font-extrabold text-lg leading-tight">{categoryName}</Text>
           <Text className="text-gray-500 text-xs mt-1 leading-snug">
             {category?.description || 'Browse highly recommended and verified local businesses and experts.'}
           </Text>
         </View>
       </View>
+
+      {/* Filters */}
+      <CategoryFilters filters={filters} onFiltersChange={setFilters} />
 
       {/* Vendors list area */}
       {isVendorsLoading ? (
@@ -93,14 +142,16 @@ export default function CategoryDetailScreen() {
           <Text className="text-red-500 font-bold mt-2 text-center text-base">Failed to load providers</Text>
           <Text className="text-gray-400 text-sm text-center mt-1">Please try again later</Text>
         </View>
-      ) : !vendors || vendors.length === 0 ? (
+      ) : vendors.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6 bg-gray-50">
           <View className="w-16 h-16 bg-gray-100 rounded-full items-center justify-center mb-4">
             <MaterialCommunityIcons name="account-search-outline" size={32} color="#9CA3AF" />
           </View>
           <Text className="text-gray-800 font-bold text-base text-center">No service providers available</Text>
           <Text className="text-gray-400 text-xs text-center mt-1.5 leading-relaxed">
-            There are currently no listed providers for the {categoryName} category. We are continuously adding trusted new businesses.
+            {filters.city || filters.verifiedOnly
+              ? 'Try adjusting your filters or check back later.'
+              : `There are currently no listed providers for the ${categoryName} category. We are continuously adding trusted new businesses.`}
           </Text>
         </View>
       ) : (
@@ -108,6 +159,12 @@ export default function CategoryDetailScreen() {
           data={vendors}
           keyExtractor={(item: Vendor) => item.id.toString()}
           renderItem={({ item }: { item: Vendor }) => <VendorCard vendor={item} />}
+          ListFooterComponent={
+            <>
+              {renderFooter()}
+              {renderLoadMoreButton()}
+            </>
+          }
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

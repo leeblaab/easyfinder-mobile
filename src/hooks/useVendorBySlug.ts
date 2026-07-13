@@ -7,10 +7,16 @@ export function useVendorBySlug(slug: string) {
     queryKey: ['vendor', slug],
     queryFn: async () => {
       if (!slug) return null;
-      const response = await apiClient.get<{ data: Vendor[] }>(
-        `/items/vendors?filter[slug][_eq]=${slug}&fields=*,category.name`
-      );
-      return response.data.data[0] || null;
+      
+      try {
+        const response = await apiClient.get<{ data: Vendor[] }>(
+          `/items/vendors?filter[slug][_eq]=${encodeURIComponent(slug)}&fields=*,category.name`
+        );
+        return response.data.data[0] || null;
+      } catch (error) {
+        console.error(`Error fetching vendor by slug ${slug}:`, error);
+        return null;
+      }
     },
     enabled: !!slug,
   });

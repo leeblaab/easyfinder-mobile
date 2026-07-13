@@ -42,6 +42,17 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="locations"
+        options={{
+          title: 'Locations',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="map-marker-radius" color={color} size={size} />
+          ),
+          tabBarActiveTintColor: '#176B87',
+          tabBarInactiveTintColor: '#8E8E93',
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',

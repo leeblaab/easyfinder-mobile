@@ -1,6 +1,11 @@
-const FALLBACK_ICON = 'help-circle';
+import type { ComponentProps } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const directusIconMap: Record<string, string> = {
+type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
+
+const FALLBACK_ICON: IconName = 'help-circle';
+
+const directusIconMap: Record<string, IconName> = {
   'ac-repair': 'air-conditioner',
   'ac-repair-service': 'air-conditioner',
   'ac-unit': 'air-conditioner',
@@ -52,7 +57,7 @@ const directusIconMap: Record<string, string> = {
   'yard': 'tree',
 };
 
-export const resolveCategoryIconName = (icon?: string): string => {
+export const resolveCategoryIconName = (icon?: string): IconName => {
   if (!icon) return FALLBACK_ICON;
 
   const normalized = icon.toLowerCase().trim().replace(/[_\s]+/g, '-');

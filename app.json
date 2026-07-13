@@ -16,7 +16,8 @@
       "bundleIdentifier": "ae.easyfinder.app",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to upload vendor logos.",
-        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to upload vendor logos."
+        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to upload vendor logos.",
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to find service providers near you."
       }
     },
     "android": {
@@ -27,7 +28,9 @@
       "package": "ae.easyfinder.app",
       "permissions": [
         "CAMERA",
-        "READ_EXTERNAL_STORAGE"
+        "READ_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
       ]
     },
     "web": {
@@ -43,7 +46,13 @@
           "photosPermission": "Allow EasyFinder to access your photos for uploading vendor logos."
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow EasyFinder to use location to find service providers near you."
+        }
+      ]
     ],
     "scheme": "easyfinder"
   }

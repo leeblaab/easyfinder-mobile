@@ -4,6 +4,7 @@ export interface Category {
   slug: string;
   icon?: string;
   description?: string;
+  vendorCount?: number;
 }
 
 export interface Vendor {
@@ -11,9 +12,7 @@ export interface Vendor {
   name: string;
   slug: string;
   logo?: string | null;
-  category: {
-    name: string;
-  };
+  category: Category;
   service_areas: string[] | string;
   verified: boolean;
   phone?: string | null;
